@@ -25,10 +25,10 @@ int main(){
     cout<<"3. Salir."<<endl;
     cin>>opcion;
     if(opcion=1){
-        int servicios ();
+         servicios ();
     }
     if(opcion=2){
-        int cita();
+        cita();
     }
     if (opcion=3){
     return 0;
@@ -47,7 +47,7 @@ int servicios(){
     cout<<"¿Deseas agendar alguno de nuestros servicios?\n Escribe 1 para confirmar. \n Escribe 0 para salir.";
     cin>>servicio;
     if(servicio=1){
-        void cita();
+         cita();
     }
     else{
         return 0;
