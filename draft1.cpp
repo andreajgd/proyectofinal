@@ -54,14 +54,16 @@ void cita() {
         return;
     }
 
+    cin.ignore(); 
+
     cout << "Ingresa el nombre del paciente: ";
-    cin >> paciente.nombres[paciente.count];
+    getline(cin, paciente.nombres[paciente.count]);
     cout << "Ingresa el apellido del paciente: ";
-    cin >> paciente.apellidos[paciente.count];
+    getline(cin, paciente.apellidos[paciente.count]);
     cout << "Ingresa el número de contacto del paciente: ";
-    cin >> paciente.numero[paciente.count];
+    getline(cin, paciente.numero[paciente.count]);
     cout << "Ingresa el correo del paciente: ";
-    cin >> paciente.correo[paciente.count];
+    getline(cin, paciente.correo[paciente.count]);
 
     paciente.count++;
     cout << "Cita agendada correctamente." << endl;
