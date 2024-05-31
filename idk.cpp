@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 int servicios();
+void cita();
 struct pacientes {
     string nombres[100];
     string apellidos[100];
@@ -17,10 +18,21 @@ int main(){
     for(int i=0;i<65;i++){
         cout<<"-";
     }
+    int opcion;
     cout<<"\nIngresa el número de la acción que deseas hacer: "<<endl;
     cout<<"1. ¿Deseas ver nuestros servicios? "<<endl;
-    cout<<"3. ¿Deseas agendar una cita?"<<endl;
+    cout<<"2. ¿Deseas agendar una cita?"<<endl;
+    cout<<"3. Salir?"<<endl;
+    cin>>opcion;
+    if(opcion=1){
+        int servicios ();
+    }
+    if(opcion=2){
+        int cita();
+    }
+    if (opcion=3){
     return 0;
+    }
 }
 
 void cita(){
