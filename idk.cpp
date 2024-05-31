@@ -22,7 +22,7 @@ int main(){
     cout<<"\nIngresa el número de la acción que deseas hacer: "<<endl;
     cout<<"1. ¿Deseas ver nuestros servicios? "<<endl;
     cout<<"2. ¿Deseas agendar una cita?"<<endl;
-    cout<<"3. Salir?"<<endl;
+    cout<<"3. Salir."<<endl;
     cin>>opcion;
     if(opcion=1){
         int servicios ();
