@@ -4,49 +4,55 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <ctime> //para obtener el tiempo y fecha actual
-#include "variables.h"
+#include "structs.h"
 
 using namespace std;
-void set_color(int col){
+void set_color(int col)
+{
 
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole,col);
+    SetConsoleTextAttribute(hConsole, col);
 }
 
-void reset_color(){
+void reset_color()
+{
     set_color(7);
 }
 
-
-void menu() {
+void menu()
+{
     int opcion;
 
-    for (int i = 0; i < 65; i++) {
+    for (int i = 0; i < 65; i++)
+    {
         cout << "-";
     }
     cout << "\n                         MENU" << endl;
 
-    for (int i = 0; i < 65; i++) {
+    for (int i = 0; i < 65; i++)
+    {
         cout << "-";
     }
     cout << "\nElige una de las opciones siguientes: " << endl;
     cout << "1. ¿Deseas ver nuestros servicios? " << endl;
     cout << "2. ¿Deseas agendar una cita?" << endl;
-    cout<< "3.¿Deseas ver nuestros productos? "<<endl;
+    cout << "3. ¿Deseas ver nuestros productos? " << endl;
     cout << "4. Salir." << endl;
     cout << "Opcion: ";
     cin >> opcion;
 
-    switch (opcion) {
+    switch (opcion)
+    {
     case 1:
         servicios();
         break;
-    case 2: 
+    case 2:
         calendario();
         break;
-    //case 3: 
-        //productos();
-        //break;
+    case 3:
+        system("cls");
+        productos();
+        break;
     case 4:
         cout << "Saliendo..." << endl;
         break;
@@ -56,205 +62,293 @@ void menu() {
     }
 }
 
-void cita() {
-    if (cont >= 100) {
+void productos()
+{
+    cout << "==========CATEGORIAS DISPONIBLES============" << endl;
+
+
+    Categoria categorias[MAX_CATEGORIAS] = {
+        {
+            "Cepillos dentales",
+            {
+                {"Cepillos estándar", 20},
+                {"Cepillos eléctricos", 20},
+                {"Cepillos interdentales", 20},
+                {"Cepillos para niños", 20},
+            },
+            4 // productos en esta categoria
+        },
+
+        {"Higiene bucal",
+         {
+             {"Enjuague bucal sensitive", 20},
+             {"Enjuague bucal terapéutico", 20},
+             {"Spray mentol", 20},
+             {"Limpiador de lengua", 20},
+             {"Pasta dental con o sin fluor", 20},
+         },
+         5},
+
+        {"Articulos para brackets",
+         {
+             {"Cera para brackets", 20},
+             {"Ligas surtidas", 20},
+             {"Gel para aftas y llagas bucales", 20},
+         },
+         3}};
+
+    for (int i = 0; i < MAX_CATEGORIAS; ++i)
+    {
+        cout << "Categoria: " << categorias[i].nombre << "\n";
+        for (int j = 0; j < categorias[i].num_productos; ++j)
+        {
+            cout << "  Producto: " << categorias[i].productos[j].nombre
+                 << ", Precio: $" << categorias[i].productos[j].precio_prod << "\n";
+        }
+    }
+}
+
+void cita()
+{
+    if (cont >= 100)
+    {
         cout << "No podemos agendar más citas. La lista de pacientes está llena." << endl;
         return;
     }
-
+    // CAMBIAR SEGUN DIRECTORIO IMPORTANTEEEE!!!!
     FILE *ptrF;
-    if((ptrF=fopen("C:\\Users\\XADMIN\\OneDrive\\Escritorio\\borrador\\citas.dat", "a")) ==NULL)
+    if ((ptrF = fopen("C:\\Users\\XADMIN\\OneDrive\\Escritorio\\borrador\\citas.dat", "a")) == NULL)
         printf("\nNo se pudo abrir el archivo.\n");
 
-    else{ 
-    cin.ignore();
-    printf("Ingrese los datos para agendar su cita. \n");
+    else
+    {
+        cin.ignore();
+        printf("Ingrese los datos para agendar su cita. \n");
 
-    fechas();
+        fechas();
 
-    printf("Ingresa el nombre del paciente: ");
-    getline(cin, paciente[cont].nombres);
-    printf( "Ingresa el apellido del paciente: ");
-    getline(cin, paciente[cont].apellidos);
-    printf("Ingresa el número de contacto del paciente: \n Num nic:");
+        printf("Ingresa el nombre del paciente: ");
+        getline(cin, paciente[cont].nombres);
+        printf("Ingresa el apellido del paciente: ");
+        getline(cin, paciente[cont].apellidos);
+        printf("Ingresa el número de contacto del paciente: \n Num nic:");
 
-    getline(cin, paciente[cont].numero);
-    printf("Ingresa el correo del paciente: ");
-    getline(cin, paciente[cont].correo);
+        getline(cin, paciente[cont].numero);
+        printf("Ingresa el correo del paciente: ");
+        getline(cin, paciente[cont].correo);
 
-    fprintf(ptrF, "%s %s %s %s\n", paciente[cont].nombres.c_str(), paciente[cont].apellidos.c_str(),paciente[cont].numero.c_str(),paciente[cont].correo.c_str());
+        fprintf(ptrF, "%s %s %s %s\n", paciente[cont].nombres.c_str(), paciente[cont].apellidos.c_str(), paciente[cont].numero.c_str(), paciente[cont].correo.c_str());
 
-    cont++;
-    cout << "Datos agendados correctamente." << endl;
+        cont++;
+        cout << "Datos agendados correctamente." << endl;
 
-    fclose(ptrF); 
+        fclose(ptrF);
+    }
 }
 
-}
-
-void fechas(){
+void fechas()
+{
     FILE *ptrF;
-    if((ptrF=fopen("C:\\Users\\XADMIN\\OneDrive\\Escritorio\\borrador\\fechas.dat", "a")) ==NULL)
+    if ((ptrF = fopen("C:\\Users\\XADMIN\\OneDrive\\Escritorio\\borrador\\fechas.dat", "a")) == NULL)
         printf("\nNo se pudo abrir el archivo.\n");
 
-    else{ 
-    printf("Ingresa la fecha en que agendaras tu cita: ");
-    scanf("%d",paciente[cont].fecha);
-    fprintf(ptrF,"%d",paciente[cont].fecha);
+    else
+    {
+        printf("Ingresa la fecha en que agendaras tu cita: ");
+        scanf("%d", paciente[cont].fecha);
+        fprintf(ptrF, "%d", paciente[cont].fecha);
 
-    cout<<"Fecha agendada correctamente.";
-    fclose(ptrF);
+        cout << "Fecha agendada correctamente.";
+        fclose(ptrF);
     }
+}
 
-    }
-
-
-
-int servicios() {
+int servicios()
+{
     int servicio;
     cout << "1. CALZAS DENTALES." << endl;
     cout << "2. ORTODONCIA. " << endl;
     cout << "3. LIMPIEZA. " << endl;
     cout << "¿Deseas agendar alguno de nuestros servicios?\nEscribe 1 para confirmar.\nEscribe 2 para volver al menú principal. \nEscribe otra tecla para salir." << endl;
     cin >> servicio;
-    //preguntar servicio
+    // preguntar servicio
 
-    if (servicio == 1) {
+    if (servicio == 1)
+    {
         calendario();
-    } 
-    else if(servicio ==2){
+    }
+    else if (servicio == 2)
+    {
         cout << "Regresando al menú principal..." << endl;
         menu();
     }
-    else {
+    else
+    {
         cout << "Saliendo..." << endl;
     }
 
     return 0;
 }
 
-int getTime (){
-    //NULL = devuelve tiempo actual
-    //time_t= sinonimo de un int largo   -> %ld
-    time_t fecha =time(NULL);   //regresa cantidad de segundos desde Enero. 1, 1970 
+int getTime()
+{
+    // NULL = devuelve tiempo actual
+    // time_t= sinonimo de un int largo   -> %ld
+    time_t fecha = time(NULL); // regresa cantidad de segundos desde Enero. 1, 1970
 
-    //ctime = string of actual time
+    // ctime = string of actual time
 
-      //puntero a "fecha" para convertir los números en un string utilizando ctime
-                                         //convierte time_t value a una cadena legible para humanos
-    
+    // puntero a "fecha" para convertir los números en un string utilizando ctime
+    // convierte time_t value a una cadena legible para humanos
+
     struct tm *cur_time = localtime(&fecha);
 
-    //se utiliza "->" para acceder a los miembros de una estructura (struct) a través de un puntero (*cur_time)
-    dia_mes= (cur_time->tm_mday);  // Día del mes (1-31)
-    mes= (cur_time->tm_mon) +1;  // Mes desde enero (0-11)
-    year= (cur_time->tm_year)+ 1900;  // Cantidad de años desde 1900
-    //cout << "Fecha actual: " << dia_mes << "/" << mes << "/" << year << endl;
-    
+    // se utiliza "->" para acceder a los miembros de una estructura (struct) a través de un puntero (*cur_time)
+    dia_mes = (cur_time->tm_mday);     // Día del mes (1-31)
+    mes = (cur_time->tm_mon) + 1;      // Mes desde enero (0-11)
+    year = (cur_time->tm_year) + 1900; // Cantidad de años desde 1900
+    // cout << "Fecha actual: " << dia_mes << "/" << mes << "/" << year << endl;
+
     return mes;
 }
 
-
-void calendario() {
+void calendario()
+{
     getTime();
     char opcion;
-    cout<<"Ingresa los datos de su cita:\n ";
-    cout<<"Mes (1-12): ";
-    cin>>mesop;
-     if (mesop<mes || mesop>12 || mesop<1){
-        cout<<"Escribe un mes válido. ";
+    cout << "Ingresa los datos de su cita:\n ";
+    cout << "Mes (1-12): ";
+    cin >> mesop;
+    if (mesop < mes || mesop > 12 || mesop < 1)
+    {
+        cout << "Escribe un mes válido. ";
         calendario();
     }
 
-    if(mesop>=mes){
-        cout<<"\nFechas disponibles en color blanco, las grises ya están reservadas.";
+    if (mesop >= mes)
+    {
+        cout << "\nFechas disponibles en color blanco, las grises ya están reservadas.";
 
-        //impresion del mes
+        // impresion del mes
         cout << "\n\nMes: ";
-        switch (mesop) {
-            case 1: cout << "ENERO"; break;
-            case 2: cout << "FEBRERO"; break;
-            case 3: cout << "MARZO"; break;
-            case 4: cout << "ABRIL"; break;
-            case 5: cout << "MAYO"; break;
-            case 6: cout << "JUNIO"; break;
-            case 7: cout << "JULIO"; break;
-            case 8: cout << "AGOSTO"; break;
-            case 9: cout << "SEPTIEMBRE"; break;
-            case 10: cout << "OCTUBRE"; break;
-            case 11: cout << "NOVIEMBRE"; break;
-            case 12: cout << "DICIEMBRE"; break;
+        switch (mesop)
+        {
+        case 1:
+            cout << "ENERO";
+            break;
+        case 2:
+            cout << "FEBRERO";
+            break;
+        case 3:
+            cout << "MARZO";
+            break;
+        case 4:
+            cout << "ABRIL";
+            break;
+        case 5:
+            cout << "MAYO";
+            break;
+        case 6:
+            cout << "JUNIO";
+            break;
+        case 7:
+            cout << "JULIO";
+            break;
+        case 8:
+            cout << "AGOSTO";
+            break;
+        case 9:
+            cout << "SEPTIEMBRE";
+            break;
+        case 10:
+            cout << "OCTUBRE";
+            break;
+        case 11:
+            cout << "NOVIEMBRE";
+            break;
+        case 12:
+            cout << "DICIEMBRE";
+            break;
         }
-          cout << "\n";
-    // Días de la semana
-    printf("%-8s %-8s %-8s %-8s %-8s %-8s %-8s\n", "DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB");
+        cout << "\n";
+        // Días de la semana
+        printf("%-8s %-8s %-8s %-8s %-8s %-8s %-8s\n", "DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB");
 
-    int z = zeller();
+        int z = zeller();
 
-    // Imprimir espacios en blanco para los días antes del primer día del mes
-    for (int i = 0; i < z; i++) {
-        printf("%-9s", " ");
-    }
-
-    int diasMonth = calcDias();
-    for (int dia = 1; dia <= diasMonth; dia++) {
-        printf("%-9d", dia);
-        z++;
-        if (z % 7 == 0) {
-            cout << "\n";
+        // Imprimir espacios en blanco para los días antes del primer día del mes
+        for (int i = 0; i < z; i++)
+        {
+            printf("%-9s", " ");
         }
+
+        int diasMonth = calcDias();
+        for (int dia = 1; dia <= diasMonth; dia++)
+        {
+            printf("%-9d", dia);
+            z++;
+            if (z % 7 == 0)
+            {
+                cout << "\n";
+            }
+        }
+        cout << "\n\n";
     }
-    cout << "\n\n";
-    }
-    cout<<"\nDeseas agendar una cita en las fechas disponibles? (s/n)\n";
-    cout<<"Escribe: ";
-    cin>>opcion;
-    if(opcion == 's' || opcion== 'S'){
+    cout << "\nDeseas agendar una cita en las fechas disponibles? (s/n)\n";
+    cout << "Escribe: ";
+    cin >> opcion;
+    if (opcion == 's' || opcion == 'S')
+    {
         cita();
     }
-    else{
-        cout<<"Saliendo...\n\n";
+    else
+    {
+        cout << "Saliendo...\n\n";
         system("pause");
     }
-    
-    }
+}
 
+int calcDias()
+{
 
-int calcDias(){
-    
-    if(mesop==1 || mesop==3 || mesop==5 || mesop==7 || mesop==8 || mesop==10 || mesop==12)
-    return 31;
-    else if(mesop==2){
-        if(esBisiesto()){
+    if (mesop == 1 || mesop == 3 || mesop == 5 || mesop == 7 || mesop == 8 || mesop == 10 || mesop == 12)
+        return 31;
+    else if (mesop == 2)
+    {
+        if (esBisiesto())
+        {
             return 29;
         }
         return 28;
     }
-    else{
+    else
+    {
         return 30;
     }
-
 }
 
-bool esBisiesto(){
+bool esBisiesto()
+{
     getTime();
-    if(year %4 !=0) return false;
-    if(year %100 !=0)return true;
-    if(year % 400 !=0) return false;
+    if (year % 4 != 0)
+        return false;
+    if (year % 100 != 0)
+        return true;
+    if (year % 400 != 0)
+        return false;
     return true;
 }
 
 /*Devuelve
 0= domingo, 1=lunes, 2=martes, 3=miercoles, 4=jueves, 5=viernes, 6=sabado*/
 
-int zeller(){
-    
-    int a= (14-mesop)/12;  
-    int y= year-a;  
-    int m= mesop + 12*a -2;  
-    int dia=1,d;
-    d=(dia +y +y / 4 -y / 100+y / 400 + (31*m) /12) %7;
+int zeller()
+{
+
+    int a = (14 - mesop) / 12;
+    int y = year - a;
+    int m = mesop + 12 * a - 2;
+    int dia = 1, d;
+    d = (dia + y + y / 4 - y / 100 + y / 400 + (31 * m) / 12) % 7;
     return d;
 }
-
-
