@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <ctime> //para obtener el tiempo y fecha actual
 #include "structs.h"
+#include "getPATH.cpp"
 
 using namespace std;
 void set_color(int col)
@@ -64,7 +65,7 @@ void menu()
 
 void mostrarProductos(const Categoria &categoria)
 {
-    cout << "=========================================\n"; 
+    cout << "=========================================\n";
     cout << "Categoria: " << categoria.nombre << "\n";
     for (int i = 0; i < categoria.num_productos; i++)
     {
@@ -131,8 +132,8 @@ void productos()
         {
             cout << "Opción inválida. Por favor, intente de nuevo.\n";
             cout << "Presione Enter para continuar...";
-            cin.ignore(); 
-            cin.get();    
+            cin.ignore();
+            cin.get();
         }
     } while (opcion != 0);
     system("cls");
@@ -148,9 +149,11 @@ void cita()
     }
     // CAMBIAR SEGUN DIRECTORIO IMPORTANTEEEE!!!!
     FILE *ptrF;
-    if ((ptrF = fopen("C:\\Users\\XADMIN\\OneDrive\\Escritorio\\borrador\\citas.dat", "a")) == NULL)
+    std::string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
+    if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "a")) == NULL)
+    {
         printf("\nNo se pudo abrir el archivo.\n");
-
+    }
     else
     {
         cin.ignore();
@@ -180,16 +183,18 @@ void cita()
 void fechas()
 {
     FILE *ptrF;
-    if ((ptrF = fopen("C:\\Users\\XADMIN\\OneDrive\\Escritorio\\borrador\\fechas.dat", "a")) == NULL)
+    std::string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
+    if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "a")) == NULL)
+    {
         printf("\nNo se pudo abrir el archivo.\n");
-
+    }
     else
     {
         printf("Ingresa la fecha en que agendaras tu cita: ");
-        scanf("%d", paciente[cont].fecha);
-        fprintf(ptrF, "%d", paciente[cont].fecha);
-
-        cout << "Fecha agendada correctamente.";
+        int fecha;
+        std::cin >> fecha;
+        fprintf(ptrF, "%d", fecha);
+        std::cout << "Fecha agendada correctamente." << std::endl;
         fclose(ptrF);
     }
 }
