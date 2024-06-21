@@ -62,11 +62,24 @@ void menu()
     }
 }
 
+void mostrarProductos(const Categoria &categoria)
+{
+    cout << "=========================================\n"; 
+    cout << "Categoria: " << categoria.nombre << "\n";
+    for (int i = 0; i < categoria.num_productos; i++)
+    {
+        cout << "Producto: " << categoria.productos[i].nombre
+             << ", Precio: $" << categoria.productos[i].precio_prod << "\n";
+    }
+    cout << "\nPorfi presione enter para continuar...";
+    cin.ignore();
+    cin.get();
+}
+
 void productos()
 {
+
     cout << "==========CATEGORIAS DISPONIBLES============" << endl;
-
-
     Categoria categorias[MAX_CATEGORIAS] = {
         {
             "Cepillos dentales",
@@ -97,15 +110,33 @@ void productos()
          },
          3}};
 
-    for (int i = 0; i < MAX_CATEGORIAS; ++i)
+    int opcion;
+    do
     {
-        cout << "Categoria: " << categorias[i].nombre << "\n";
-        for (int j = 0; j < categorias[i].num_productos; ++j)
+        system("cls");
+        cout << "========== CATEGORIAS DISPONIBLES ============\n";
+        for (int i = 0; i < MAX_CATEGORIAS; ++i)
         {
-            cout << "  Producto: " << categorias[i].productos[j].nombre
-                 << ", Precio: $" << categorias[i].productos[j].precio_prod << "\n";
+            cout << i + 1 << ". " << categorias[i].nombre << "\n";
         }
-    }
+        cout << "0. Salir\n";
+        cout << "Seleccione una categoria (0 para salir): ";
+        cin >> opcion;
+
+        if (opcion > 0 && opcion <= MAX_CATEGORIAS)
+        {
+            mostrarProductos(categorias[opcion - 1]);
+        }
+        else if (opcion != 0)
+        {
+            cout << "Opción inválida. Por favor, intente de nuevo.\n";
+            cout << "Presione Enter para continuar...";
+            cin.ignore(); 
+            cin.get();    
+        }
+    } while (opcion != 0);
+    system("cls");
+    menu();
 }
 
 void cita()
