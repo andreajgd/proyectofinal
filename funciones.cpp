@@ -45,9 +45,11 @@ void menu()
     switch (opcion)
     {
     case 1:
+        system("cls");
         servicios();
         break;
     case 2:
+        system("cls");
         calendario();
         break;
     case 3:
