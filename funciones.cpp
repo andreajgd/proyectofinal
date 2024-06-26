@@ -207,7 +207,7 @@ int servicios()
     cout << "1. CALZAS DENTALES." << endl;
     cout << "2. ORTODONCIA. " << endl;
     cout << "3. LIMPIEZA. " << endl;
-    cout << "¿Deseas agendar alguno de nuestros servicios?\nEscribe 1 para confirmar.\nEscribe 2 para volver al menú principal. \nEscribe otra tecla para salir." << endl;
+    cout << "\n¿Deseas agendar alguno de nuestros servicios?\nEscribe 1 para confirmar.\nEscribe 2 para volver al menú principal. \nEscribe otra tecla para salir." << endl;
     cin >> servicio;
     // preguntar servicio
 
