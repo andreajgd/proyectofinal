@@ -8,9 +8,9 @@
 #include "getPATH.cpp"
 
 using namespace std;
+
 void set_color(int col)
 {
-
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, col);
 }
@@ -74,14 +74,13 @@ void mostrarProductos(const Categoria &categoria)
         cout << "Producto: " << categoria.productos[i].nombre
              << ", Precio: $" << categoria.productos[i].precio_prod << "\n";
     }
-    cout << "\nPorfi presione enter para continuar...";
+    cout << "\nPor favor presione enter para continuar...";
     cin.ignore();
     cin.get();
 }
 
 void productos()
 {
-
     cout << "==========CATEGORIAS DISPONIBLES============" << endl;
     Categoria categorias[MAX_CATEGORIAS] = {
         {
@@ -94,24 +93,27 @@ void productos()
             },
             4 // productos en esta categoria
         },
-
-        {"Higiene bucal",
-         {
-             {"Enjuague bucal sensitive", 20},
-             {"Enjuague bucal terapéutico", 20},
-             {"Spray mentol", 20},
-             {"Limpiador de lengua", 20},
-             {"Pasta dental con o sin fluor", 20},
-         },
-         5},
-
-        {"Articulos para brackets",
-         {
-             {"Cera para brackets", 20},
-             {"Ligas surtidas", 20},
-             {"Gel para aftas y llagas bucales", 20},
-         },
-         3}};
+        {
+            "Higiene bucal",
+            {
+                {"Enjuague bucal sensitive", 20},
+                {"Enjuague bucal terapéutico", 20},
+                {"Spray mentol", 20},
+                {"Limpiador de lengua", 20},
+                {"Pasta dental con o sin fluor", 20},
+            },
+            5
+        },
+        {
+            "Artículos para brackets",
+            {
+                {"Cera para brackets", 20},
+                {"Ligas surtidas", 20},
+                {"Gel para aftas y llagas bucales", 20},
+            },
+            3
+        }
+    };
 
     int opcion;
     do
@@ -160,44 +162,24 @@ void cita()
     {
         cin.ignore();
         printf("Ingrese los datos para agendar su cita. \n");
-
-        fechas();
-
+        printf("Ingresa la fecha en que agendaras tu cita (solo el día): ");
+        cin >> paciente[cont].fecha;
         printf("Ingresa el nombre del paciente: ");
         getline(cin, paciente[cont].nombres);
         printf("Ingresa el apellido del paciente: ");
         getline(cin, paciente[cont].apellidos);
-        printf("Ingresa el número de contacto del paciente: \n Num nic:");
-
+        printf("Ingresa el número de contacto del paciente: ");
         getline(cin, paciente[cont].numero);
         printf("Ingresa el correo del paciente: ");
         getline(cin, paciente[cont].correo);
 
+        fprintf(ptrF, "%d\n", paciente[cont].fecha);
         fprintf(ptrF, "%s %s %s %s\n", paciente[cont].nombres.c_str(), paciente[cont].apellidos.c_str(), paciente[cont].numero.c_str(), paciente[cont].correo.c_str());
+
+        fclose(ptrF);
 
         cont++;
         cout << "Datos agendados correctamente." << endl;
-
-        fclose(ptrF);
-    }
-}
-
-void fechas()
-{
-    FILE *ptrF;
-    std::string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
-    if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "a")) == NULL)
-    {
-        printf("\nNo se pudo abrir el archivo.\n");
-    }
-    else
-    {
-        printf("Ingresa la fecha en que agendaras tu cita: ");
-        int fecha;
-        std::cin >> fecha;
-        fprintf(ptrF, "%d", fecha);
-        std::cout << "Fecha agendada correctamente." << std::endl;
-        fclose(ptrF);
     }
 }
 
@@ -254,20 +236,22 @@ void calendario()
 {
     getTime();
     char opcion;
-    cout << "Ingresa los datos de su cita:\n ";
+    cout << "Ingresa los datos de su cita:\n";
     cout << "Mes (1-12): ";
     cin >> mesop;
+
     if (mesop < mes || mesop > 12 || mesop < 1)
     {
-        cout << "Escribe un mes válido. ";
+        cout << "Escribe un mes válido." << endl;
         calendario();
+        return;
     }
 
     if (mesop >= mes)
     {
-        cout << "\nFechas disponibles en color blanco, las grises ya están reservadas.";
+        cout << "\nFechas disponibles en color blanco, las verdes ya están reservadas.";
 
-        // impresion del mes
+        // Impresión del mes
         cout << "\n\nMes: ";
         switch (mesop)
         {
@@ -320,21 +304,57 @@ void calendario()
             printf("%-9s", " ");
         }
 
-        int diasMonth = calcDias();
-        for (int dia = 1; dia <= diasMonth; dia++)
+        // Leer fechas desde el archivo y mostrar en el calendario
+        std::string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
+        FILE *ptrF;
+        if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "r")) == NULL)
         {
-            printf("%-9d", dia);
-            z++;
-            if (z % 7 == 0)
+            printf("\nNo se pudo abrir el archivo.\n");
+        }
+        else
+        {
+            int diasMonth = calcDias();
+            int reservedDates[diasMonth] = {0};
+            int fecha;
+            int i = 0;
+            while (fscanf(ptrF, "%d", &fecha) != EOF && i < diasMonth)
             {
-                cout << "\n";
+                reservedDates[fecha - 1] = 1;
+                i++;
+            }
+
+            fclose(ptrF);
+
+            // Imprimir las fechas
+            for (int dia = 1; dia <= diasMonth; dia++)
+            {
+                if (reservedDates[dia - 1] == 1)
+                {
+                    set_color(10);
+                    printf("%-9d", dia);
+                }
+                else
+                {
+                    reset_color();
+                    printf("%-9d", dia);
+                }
+
+                z++;
+
+                if (z % 7 == 0)
+                {
+                    cout << "\n";
+                }
             }
         }
+
         cout << "\n\n";
     }
-    cout << "\nDeseas agendar una cita en las fechas disponibles? (s/n)\n";
+
+    cout << "¿Deseas agendar una cita en las fechas disponibles? (s/n)\n";
     cout << "Escribe: ";
     cin >> opcion;
+
     if (opcion == 's' || opcion == 'S')
     {
         cita();
@@ -348,7 +368,6 @@ void calendario()
 
 int calcDias()
 {
-
     if (mesop == 1 || mesop == 3 || mesop == 5 || mesop == 7 || mesop == 8 || mesop == 10 || mesop == 12)
         return 31;
     else if (mesop == 2)
@@ -377,12 +396,11 @@ bool esBisiesto()
     return true;
 }
 
-/*Devuelve
-0= domingo, 1=lunes, 2=martes, 3=miercoles, 4=jueves, 5=viernes, 6=sabado*/
+/* Devuelve
+0= domingo, 1=lunes, 2=martes, 3=miércoles, 4=jueves, 5=viernes, 6=sábado */
 
 int zeller()
 {
-
     int a = (14 - mesop) / 12;
     int y = year - a;
     int m = mesop + 12 * a - 2;
