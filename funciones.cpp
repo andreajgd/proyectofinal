@@ -6,30 +6,28 @@
 #include <ctime> //para obtener el tiempo y fecha actual
 #include "structs.h"
 #include "getPATH.cpp"
+#include "colores.cpp"
 
 using namespace std;
 
-void set_color(int col)
-{
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, col);
-}
-
-void reset_color()
-{
-    set_color(7);
-}
 
 void menu()
 {
+    
     int opcion;
 
+    set_color(3);
+    cout<<"\n";
     for (int i = 0; i < 65; i++)
     {
         cout << "-";
     }
-    cout << "\n                         MENU" << endl;
 
+    cout<<"\n";
+
+    menucout();
+    
+    cout<<"\n";
     for (int i = 0; i < 65; i++)
     {
         cout << "-";
@@ -40,8 +38,9 @@ void menu()
     cout << "3. ¿Deseas ver nuestros productos? " << endl;
     cout << "4. Salir." << endl;
     cout << "Opcion: ";
+    reset_color();
     cin >> opcion;
-
+    
     switch (opcion)
     {
     case 1:
@@ -63,10 +62,12 @@ void menu()
         cout << "Opcion invalida. Intente de nuevo." << endl;
         menu();
     }
+
 }
 
 void mostrarProductos(const Categoria &categoria)
 {
+    
     cout << "=========================================\n";
     cout << "Categoria: " << categoria.nombre << "\n";
     for (int i = 0; i < categoria.num_productos; i++)
