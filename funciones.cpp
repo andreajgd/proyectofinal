@@ -1,33 +1,39 @@
 #include <iostream>
 #include <string>
+#include <iomanip>
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
 #include <ctime> //para obtener el tiempo y fecha actual
 #include "structs.h"
 #include "getPATH.cpp"
-#include "colores.cpp"
 
 using namespace std;
+void set_color(int col)
+{
 
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, col);
+}
+
+void reset_color()
+{
+    set_color(7);
+}
 
 void menu()
 {
-    
     int opcion;
+    //Bucle Do While para repetir menú cada que se finalice una función
+    do{
+    system("cls");
 
-    set_color(3);
-    cout<<"\n";
     for (int i = 0; i < 65; i++)
     {
         cout << "-";
     }
+    cout << "\n                         MENU" << endl;
 
-    cout<<"\n";
-
-    menucout();
-    
-    cout<<"\n";
     for (int i = 0; i < 65; i++)
     {
         cout << "-";
@@ -38,9 +44,8 @@ void menu()
     cout << "3. ¿Deseas ver nuestros productos? " << endl;
     cout << "4. Salir." << endl;
     cout << "Opcion: ";
-    reset_color();
     cin >> opcion;
-    
+
     switch (opcion)
     {
     case 1:
@@ -62,127 +67,218 @@ void menu()
         cout << "Opcion invalida. Intente de nuevo." << endl;
         menu();
     }
-
-}
-
-void mostrarProductos(const Categoria &categoria)
-{
+    } while (opcion != 4);
     
-    cout << "=========================================\n";
-    cout << "Categoria: " << categoria.nombre << "\n";
-    for (int i = 0; i < categoria.num_productos; i++)
-    {
-        cout << "Producto: " << categoria.productos[i].nombre
-             << ", Precio: $" << categoria.productos[i].precio_prod << "\n";
-    }
-    cout << "\nPor favor presione enter para continuar...";
-    cin.ignore();
-    cin.get();
 }
 
-void productos()
-{
-    cout << "==========CATEGORIAS DISPONIBLES============" << endl;
+void mostrarProductos(Categoria categoria) {
+    cout << "========== PRODUCTOS EN " << categoria.nombre << " ==========" << endl;
+    for (int i = 0; i < categoria.num_productos; ++i) {
+        cout << i + 1 << ". " << categoria.productos[i].nombre << " - $" << categoria.productos[i].precio_prod << endl;
+    }
+    cout << "0. Regresar\n";
+}
+
+void mostrarFactura(Carrito carrito[], int numProductos) {
+    getTime();
+    const double IVA = 0.15;
+    double totalSinIVA = 0.0;
+    double totalConIVA = 0.0;
+
+    cout << "---------------------------------------------" << endl;
+    cout << "                  FACTURA                " << endl;
+    cout << "---------------------------------------------" << endl;
+    cout << "               " << dia_mes << " / " << mes << " / " << year << "     " << endl;
+    cout << "---------------------------------------------" << endl;
+    cout << left << setw(20) << "Producto" << setw(10) << "Precio" << setw(10) << "Cantidad" << setw(10) << "Total" << endl;
+    cout << "---------------------------------------------" << endl;
+
+    for (int i = 0; i < numProductos; i++) {
+        double totalProducto = carrito[i].precio * carrito[i].cantidad;
+        totalSinIVA += totalProducto;
+        cout << left << setw(20) << carrito[i].nombre << setw(10) << carrito[i].precio << setw(10) << carrito[i].cantidad << setw(10) << totalProducto << endl;
+    }
+
+    double ivaCalculado = totalSinIVA * IVA;
+    totalConIVA = totalSinIVA + ivaCalculado;
+
+    cout << "---------------------------------------------" << endl;
+    cout << left << setw(20) << "Subtotal" << setw(10) << "" << setw(10) << "" << setw(10) << totalSinIVA << endl;
+    cout << left << setw(20) << "IVA (15%)" << setw(10) << "" << setw(10) << "" << setw(10) << ivaCalculado << endl;
+    cout << left << setw(20) << "Total" << setw(10) << "" << setw(10) << "" << setw(10) << totalConIVA << endl;
+    cout << "---------------------------------------------" << endl;
+    
+}
+
+void productos() {
     Categoria categorias[MAX_CATEGORIAS] = {
         {
             "Cepillos dentales",
             {
-                {"Cepillos estándar", 20},
-                {"Cepillos eléctricos", 20},
-                {"Cepillos interdentales", 20},
-                {"Cepillos para niños", 20},
+                {"Cepillos estándar", 1.5},
+                {"Cepillos eléctricos", 15.0},
+                {"Cepillos interdentales", 2.0},
+                {"Cepillos para niños", 1.0},
             },
             4 // productos en esta categoria
         },
-        {
-            "Higiene bucal",
+
+        {"Higiene bucal",
             {
-                {"Enjuague bucal sensitive", 20},
-                {"Enjuague bucal terapéutico", 20},
-                {"Spray mentol", 20},
-                {"Limpiador de lengua", 20},
-                {"Pasta dental con o sin fluor", 20},
+                {"Enjuague bucal sensitive", 3.0},
+                {"Enjuague bucal terapéutico", 3.5},
+                {"Spray mentol", 2.5},
+                {"Limpiador de lengua", 1.5},
+                {"Pasta dental con o sin fluor", 2.0},
             },
-            5
-        },
-        {
-            "Artículos para brackets",
+            5},
+
+        {"Articulos para brackets",
             {
-                {"Cera para brackets", 20},
-                {"Ligas surtidas", 20},
-                {"Gel para aftas y llagas bucales", 20},
+                {"Cera para brackets", 1.2},
+                {"Ligas surtidas", 0.5},
+                {"Gel para aftas y llagas bucales", 3.0},
             },
-            3
-        }
-    };
+            3}};
 
     int opcion;
-    do
-    {
+    Carrito carrito[MAX_PROD * MAX_CATEGORIAS];
+    int numComprados = 0;
+
+    do {
         system("cls");
         cout << "========== CATEGORIAS DISPONIBLES ============\n";
-        for (int i = 0; i < MAX_CATEGORIAS; ++i)
-        {
+        for (int i = 0; i < MAX_CATEGORIAS; ++i) {
             cout << i + 1 << ". " << categorias[i].nombre << "\n";
         }
         cout << "0. Salir\n";
         cout << "Seleccione una categoria (0 para salir): ";
         cin >> opcion;
 
-        if (opcion > 0 && opcion <= MAX_CATEGORIAS)
-        {
+        if (opcion > 0 && opcion <= MAX_CATEGORIAS) {
             mostrarProductos(categorias[opcion - 1]);
-        }
-        else if (opcion != 0)
-        {
+
+            int productoOpcion;
+            do {
+                cout << "Seleccione un producto para comprar (0 para regresar): ";
+                cin >> productoOpcion;
+
+                if (productoOpcion > 0 && productoOpcion <= categorias[opcion - 1].num_productos) {
+                    cout << "Ingrese la cantidad: ";
+                    int cantidad;
+                    cin >> cantidad;
+                    carrito[numComprados].nombre = categorias[opcion - 1].productos[productoOpcion - 1].nombre;
+                    carrito[numComprados].precio = categorias[opcion - 1].productos[productoOpcion - 1].precio_prod;
+                    carrito[numComprados].cantidad = cantidad;
+                    numComprados++;
+                } else if (productoOpcion != 0) {
+                    cout << "Opción inválida. Por favor, intente de nuevo.\n";
+                }
+            } while (productoOpcion != 0);
+        } else if (opcion != 0) {
             cout << "Opción inválida. Por favor, intente de nuevo.\n";
             cout << "Presione Enter para continuar...";
             cin.ignore();
             cin.get();
         }
     } while (opcion != 0);
-    system("cls");
-    menu();
+
+    if (numComprados > 0) {
+        mostrarFactura(carrito, numComprados);
+    }
+    
+    cout << "Presione Enter para continuar...";
+    cin.ignore();
+    cin.get();
 }
 
-void cita()
-{
-    if (cont >= 100)
-    {
+void cita() {
+    if (cont >= 100) {
         cout << "No podemos agendar más citas. La lista de pacientes está llena." << endl;
         return;
     }
-    // CAMBIAR SEGUN DIRECTORIO IMPORTANTEEEE!!!!
+
     FILE *ptrF;
-    std::string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
-    if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "a")) == NULL)
-    {
+    string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
+    if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "a")) == NULL) {
         printf("\nNo se pudo abrir el archivo.\n");
-    }
-    else
-    {
+    } else {
         cin.ignore();
         printf("Ingrese los datos para agendar su cita. \n");
-        printf("Ingresa la fecha en que agendaras tu cita (solo el día): ");
-        cin >> paciente[cont].fecha;
+
+        // Llamamos a la función fechas para obtener la fecha y hora de la cita
+        fechas();
+
         printf("Ingresa el nombre del paciente: ");
         getline(cin, paciente[cont].nombres);
         printf("Ingresa el apellido del paciente: ");
         getline(cin, paciente[cont].apellidos);
-        printf("Ingresa el número de contacto del paciente: ");
+        printf("Ingresa el número de contacto del paciente: \nNum nic: ");
         getline(cin, paciente[cont].numero);
         printf("Ingresa el correo del paciente: ");
         getline(cin, paciente[cont].correo);
 
-        fprintf(ptrF, "%d\n", paciente[cont].fecha);
-        fprintf(ptrF, "%s %s %s %s\n", paciente[cont].nombres.c_str(), paciente[cont].apellidos.c_str(), paciente[cont].numero.c_str(), paciente[cont].correo.c_str());
-
-        fclose(ptrF);
+        // Guardamos los datos en el archivo
+            fprintf(ptrF, "%s %s %s %s %d/%d/%d %d:00\n",
+            paciente[cont].nombres.c_str(),
+            paciente[cont].apellidos.c_str(),
+            paciente[cont].numero.c_str(),
+            paciente[cont].correo.c_str(),
+            paciente[cont].fecha,
+            paciente[cont].mesCita,
+            paciente[cont].año,
+            paciente[cont].hora,
+            paciente[cont].minutos
+        );
 
         cont++;
         cout << "Datos agendados correctamente." << endl;
+
+        fclose(ptrF);
     }
 }
+
+
+
+void fechas() {
+    int fecha; // Validador de fecha según el número de días del mes en el calendario
+    do {
+        printf("Ingresa el día de la cita (1-%d): ", calcDias());
+        cin >> fecha;
+    } while (fecha > calcDias() || fecha < 1);
+
+    // Asignamos la fecha a la estructura del paciente
+    paciente[cont].fecha = fecha;
+    paciente[cont].mesCita = mes;
+    paciente[cont].año = year;
+
+    int horaCita;
+    do {
+        printf("Ingresa la hora de la cita (8-11, 13-17, excluyendo las 12): ");
+        cin >> horaCita;
+    } while ((horaCita < 8 || horaCita > 17) || horaCita == 12);
+
+    // Validación para no permitir citas duplicadas
+    for (int i = 0; i < cont; ++i) {
+        if (paciente[i].fecha == fecha && paciente[i].hora == horaCita) {
+            cout << "Ya existe una cita programada para esa fecha y hora. Por favor, elige otra." << endl;
+            fechas(); // Vuelve a solicitar los datos de la cita
+            return; // Salimos de la función para evitar duplicación de la cita
+        }
+    }
+
+    // Asignamos la hora a la estructura del paciente
+    paciente[cont].hora = horaCita;
+
+    cout << "Fecha y hora agendadas correctamente." << endl;
+
+    // Limpia el buffer del teclado
+    cin.ignore();
+    cin.get();
+}
+
+
+
 
 int servicios()
 {
@@ -228,6 +324,8 @@ int getTime()
     dia_mes = (cur_time->tm_mday);     // Día del mes (1-31)
     mes = (cur_time->tm_mon) + 1;      // Mes desde enero (0-11)
     year = (cur_time->tm_year) + 1900; // Cantidad de años desde 1900
+    hora = (cur_time->tm_hour);
+    minutos = (cur_time->tm_min);
     // cout << "Fecha actual: " << dia_mes << "/" << mes << "/" << year << endl;
 
     return mes;
@@ -237,22 +335,20 @@ void calendario()
 {
     getTime();
     char opcion;
-    cout << "Ingresa los datos de su cita:\n";
+    cout << "Ingresa los datos de su cita:\n ";
     cout << "Mes (1-12): ";
     cin >> mesop;
-
     if (mesop < mes || mesop > 12 || mesop < 1)
     {
-        cout << "Escribe un mes válido." << endl;
+        cout << "Escribe un mes válido. ";
         calendario();
-        return;
     }
 
     if (mesop >= mes)
     {
-        cout << "\nFechas disponibles en color blanco, las verdes ya están reservadas.";
+        cout << "\nFechas disponibles en color blanco, las grises ya están reservadas.";
 
-        // Impresión del mes
+        // impresion del mes
         cout << "\n\nMes: ";
         switch (mesop)
         {
@@ -300,62 +396,28 @@ void calendario()
         int z = zeller();
 
         // Imprimir espacios en blanco para los días antes del primer día del mes
-        for (int i = 0; i < z; i++)
-        {
+        for (int i = 0; i < z; i++) {
             printf("%-9s", " ");
         }
 
-        // Leer fechas desde el archivo y mostrar en el calendario
-        std::string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
-        FILE *ptrF;
-        if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "r")) == NULL)
-        {
-            printf("\nNo se pudo abrir el archivo.\n");
-        }
-        else
-        {
-            int diasMonth = calcDias();
-            int reservedDates[diasMonth] = {0};
-            int fecha;
-            int i = 0;
-            while (fscanf(ptrF, "%d", &fecha) != EOF && i < diasMonth)
-            {
-                reservedDates[fecha - 1] = 1;
-                i++;
+        int diasMonth = calcDias();
+        for (int dia = 1; dia <= diasMonth; dia++) {
+            if (mesop > mes || (mesop == mes && dia >= dia_mes)) {
+                // Días en color celeste
+                printf("\033[36m%-9d\033[0m", dia);
+            } else {
+                printf("%-9d", dia);
             }
-
-            fclose(ptrF);
-
-            // Imprimir las fechas
-            for (int dia = 1; dia <= diasMonth; dia++)
-            {
-                if (reservedDates[dia - 1] == 1)
-                {
-                    set_color(10);
-                    printf("%-9d", dia);
-                }
-                else
-                {
-                    reset_color();
-                    printf("%-9d", dia);
-                }
-
-                z++;
-
-                if (z % 7 == 0)
-                {
-                    cout << "\n";
-                }
+            z++;
+            if (z % 7 == 0) {
+                cout << "\n";
             }
         }
-
         cout << "\n\n";
     }
-
-    cout << "¿Deseas agendar una cita en las fechas disponibles? (s/n)\n";
+    cout << "\nDeseas agendar una cita en las fechas disponibles? (s/n)\n";
     cout << "Escribe: ";
     cin >> opcion;
-
     if (opcion == 's' || opcion == 'S')
     {
         cita();
@@ -369,6 +431,7 @@ void calendario()
 
 int calcDias()
 {
+
     if (mesop == 1 || mesop == 3 || mesop == 5 || mesop == 7 || mesop == 8 || mesop == 10 || mesop == 12)
         return 31;
     else if (mesop == 2)
@@ -397,11 +460,12 @@ bool esBisiesto()
     return true;
 }
 
-/* Devuelve
-0= domingo, 1=lunes, 2=martes, 3=miércoles, 4=jueves, 5=viernes, 6=sábado */
+/*Devuelve
+0= domingo, 1=lunes, 2=martes, 3=miercoles, 4=jueves, 5=viernes, 6=sabado*/
 
 int zeller()
 {
+
     int a = (14 - mesop) / 12;
     int y = year - a;
     int m = mesop + 12 * a - 2;
