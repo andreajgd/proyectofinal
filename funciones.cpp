@@ -3,20 +3,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include <ctime> //para obtener el tiempo y fecha actual
+#include <ctime> // para obtener el tiempo y fecha actual
 #include "structs.h"
 #include "getPATH.cpp"
 #include "colores.cpp"
 
 using namespace std;
 
-
+// Función para mostrar el menú principal
 void menu()
 {
-    
     int opcion;
 
-    set_color(3);
+    set_color(3); // Establece el color del texto
     cout<<"\n";
     for (int i = 0; i < 65; i++)
     {
@@ -25,7 +24,7 @@ void menu()
 
     cout<<"\n";
 
-    menucout();
+    menucout(); // Llama a una función para mostrar el contenido del menú (asumida definida en otro archivo)
     
     cout<<"\n";
     for (int i = 0; i < 65; i++)
@@ -34,40 +33,34 @@ void menu()
     }
     cout << "\nElige una de las opciones siguientes: " << endl;
     cout << "1. ¿Deseas ver nuestros servicios? " << endl;
-    cout << "2. ¿Deseas agendar una cita?" << endl;
-    cout << "3. ¿Deseas ver nuestros productos? " << endl;
-    cout << "4. Salir." << endl;
+    cout << "2. ¿Deseas ver nuestros productos? " << endl;
+    cout << "3. Salir." << endl;
     cout << "Opcion: ";
-    reset_color();
+    reset_color(); // Restaura el color del texto
     cin >> opcion;
     
     switch (opcion)
     {
     case 1:
-        system("cls");
+        system("cls"); // Limpia la pantalla
         servicios();
         break;
     case 2:
-        system("cls");
-        calendario();
-        break;
-    case 3:
-        system("cls");
+        system("cls"); // Limpia la pantalla
         productos();
         break;
-    case 4:
+    case 3:
         cout << "Saliendo..." << endl;
         break;
     default:
         cout << "Opcion invalida. Intente de nuevo." << endl;
-        menu();
+        menu(); // Llama al menú nuevamente si la opción es inválida
     }
-
 }
 
+// Función para mostrar los productos de una categoría específica
 void mostrarProductos(const Categoria &categoria)
 {
-    
     cout << "=========================================\n";
     cout << "Categoria: " << categoria.nombre << "\n";
     for (int i = 0; i < categoria.num_productos; i++)
@@ -80,6 +73,7 @@ void mostrarProductos(const Categoria &categoria)
     cin.get();
 }
 
+// Función para mostrar las categorías de productos y sus productos
 void productos()
 {
     cout << "==========CATEGORIAS DISPONIBLES============" << endl;
@@ -92,7 +86,7 @@ void productos()
                 {"Cepillos interdentales", 20},
                 {"Cepillos para niños", 20},
             },
-            4 // productos en esta categoria
+            4 // productos en esta categoría
         },
         {
             "Higiene bucal",
@@ -119,7 +113,7 @@ void productos()
     int opcion;
     do
     {
-        system("cls");
+        system("cls"); // Limpia la pantalla
         cout << "========== CATEGORIAS DISPONIBLES ============\n";
         for (int i = 0; i < MAX_CATEGORIAS; ++i)
         {
@@ -141,10 +135,11 @@ void productos()
             cin.get();
         }
     } while (opcion != 0);
-    system("cls");
+    system("cls"); // Limpia la pantalla
     menu();
 }
 
+// Función para agendar una cita
 void cita()
 {
     if (cont >= 100)
@@ -152,7 +147,8 @@ void cita()
         cout << "No podemos agendar más citas. La lista de pacientes está llena." << endl;
         return;
     }
-    // CAMBIAR SEGUN DIRECTORIO IMPORTANTEEEE!!!!
+    // CAMBIAR SEGÚN DIRECTORIO IMPORTANTEEEE!!!!
+
     FILE *ptrF;
     std::string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
     if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "a")) == NULL)
@@ -184,19 +180,21 @@ void cita()
     }
 }
 
+// Función para mostrar los servicios disponibles
 int servicios()
 {
     int servicio;
     cout << "1. CALZAS DENTALES." << endl;
     cout << "2. ORTODONCIA. " << endl;
     cout << "3. LIMPIEZA. " << endl;
-    cout << "\n¿Deseas agendar alguno de nuestros servicios?\nEscribe 1 para confirmar.\nEscribe 2 para volver al menú principal. \nEscribe otra tecla para salir." << endl;
+    cout << "\n¿Deseas agendar una cita?\nEscribe 1 para confirmar.\nEscribe 2 para volver al menú principal. \nEscribe otra tecla para salir." << endl;
     cin >> servicio;
     // preguntar servicio
 
     if (servicio == 1)
     {
         calendario();
+        horas_dia+=hora_calza;
     }
     else if (servicio == 2)
     {
@@ -211,28 +209,21 @@ int servicios()
     return 0;
 }
 
+// Función para obtener la fecha y hora actual
 int getTime()
 {
-    // NULL = devuelve tiempo actual
-    // time_t= sinonimo de un int largo   -> %ld
     time_t fecha = time(NULL); // regresa cantidad de segundos desde Enero. 1, 1970
-
-    // ctime = string of actual time
-
-    // puntero a "fecha" para convertir los números en un string utilizando ctime
-    // convierte time_t value a una cadena legible para humanos
 
     struct tm *cur_time = localtime(&fecha);
 
-    // se utiliza "->" para acceder a los miembros de una estructura (struct) a través de un puntero (*cur_time)
     dia_mes = (cur_time->tm_mday);     // Día del mes (1-31)
     mes = (cur_time->tm_mon) + 1;      // Mes desde enero (0-11)
     year = (cur_time->tm_year) + 1900; // Cantidad de años desde 1900
-    // cout << "Fecha actual: " << dia_mes << "/" << mes << "/" << year << endl;
 
     return mes;
 }
 
+// Función para mostrar el calendario y agendar citas
 void calendario()
 {
     getTime();
@@ -331,12 +322,12 @@ void calendario()
             {
                 if (reservedDates[dia - 1] == 1)
                 {
-                    set_color(10);
+                    set_color(10); // Establece el color del texto a verde
                     printf("%-9d", dia);
                 }
                 else
                 {
-                    reset_color();
+                    reset_color(); // Restaura el color del texto
                     printf("%-9d", dia);
                 }
 
@@ -367,11 +358,12 @@ void calendario()
     }
 }
 
+// Función para calcular el número de días en el mes seleccionado
 int calcDias()
 {
     if (mesop == 1 || mesop == 3 || mesop == 5 || mesop == 7 || mesop == 8 || mesop == 10 || mesop == 12)
         return 31;
-    else if (mesop == 2)
+    else if (mesop == 2) //mes opcion (opcion del mes que se escogio)
     {
         if (esBisiesto())
         {
@@ -385,6 +377,7 @@ int calcDias()
     }
 }
 
+// Función para determinar si el año es bisiesto
 bool esBisiesto()
 {
     getTime();
@@ -397,9 +390,7 @@ bool esBisiesto()
     return true;
 }
 
-/* Devuelve
-0= domingo, 1=lunes, 2=martes, 3=miércoles, 4=jueves, 5=viernes, 6=sábado */
-
+// Función para calcular el día de la semana del primer día del mes (algoritmo de Zeller)
 int zeller()
 {
     int a = (14 - mesop) / 12;

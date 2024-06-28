@@ -1,12 +1,8 @@
-#include <iostream>
-#include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include "funciones.cpp"
-
+#include "funciones.cpp"  //incluir archivo para utilizar la funcion menu
 
 int main() {
     getTime ();
-    menu();
+    menu();  //llamada del menu principal 
     return 0;
 }
+
