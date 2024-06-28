@@ -15,7 +15,8 @@ struct Paciente{
     int mesCita;
     int fecha;
     int hora;
-    int segundos;
+    int minutos;
+    int año;
     int servicio;
     
 } paciente[100]; 
@@ -39,6 +40,11 @@ struct Categoria
     int num_productos;
 };
 
+struct Carrito {
+    string nombre;
+    double precio;
+    int cantidad;
+};
 
 
 
@@ -54,6 +60,6 @@ int getTime ();
 void fechas();
 void calculoFechas();
 
-int dia_mes,mes,year,mesop;
+int dia_mes,mes,year,mesop,hora,minutos;
 
 #define NUM_ALLOWED 8
