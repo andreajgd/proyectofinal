@@ -16,7 +16,7 @@ struct Paciente{
     int fecha;
     int hora;
     int minutos;
-    int año;
+    int year;
     int servicio;
     
 } paciente[100]; 

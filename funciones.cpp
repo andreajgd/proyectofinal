@@ -7,19 +7,9 @@
 #include <ctime> //para obtener el tiempo y fecha actual
 #include "structs.h"
 #include "getPATH.cpp"
+#include "colores.cpp"
 
 using namespace std;
-void set_color(int col)
-{
-
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, col);
-}
-
-void reset_color()
-{
-    set_color(7);
-}
 
 void menu()
 {
@@ -28,44 +18,51 @@ void menu()
     do{
     system("cls");
 
-    for (int i = 0; i < 65; i++)
-    {
-        cout << "-";
-    }
-    cout << "\n                         MENU" << endl;
+     set_color(3); // Establece el color del texto
+    cout<<"\n";
+    
+    cout<<"\n";
 
-    for (int i = 0; i < 65; i++)
-    {
-        cout << "-";
-    }
+    menucout(); // Llama a una función para mostrar el contenido del menú
+    set_color(8);
     cout << "\nElige una de las opciones siguientes: " << endl;
-    cout << "1. ¿Deseas ver nuestros servicios? " << endl;
-    cout << "2. ¿Deseas agendar una cita?" << endl;
-    cout << "3. ¿Deseas ver nuestros productos? " << endl;
+    set_color(3);
+    cout << "1. Agendar una cita." << endl;
+    cout<<"2. Eliminar cita."<<endl;
+    cout << "3. Ver productos." << endl;
+    set_color(4);
     cout << "4. Salir." << endl;
+    set_color(3);
     cout << "Opcion: ";
+    reset_color(); // Restaura el color del texto
     cin >> opcion;
-
+    
     switch (opcion)
     {
     case 1:
-        system("cls");
+        system("cls"); // Limpia la pantalla
         servicios();
         break;
+
     case 2:
         system("cls");
-        calendario();
-        break;
+        //ok
     case 3:
-        system("cls");
+        system("cls"); // Limpia la pantalla
         productos();
         break;
     case 4:
+        set_color(4);
         cout << "Saliendo..." << endl;
+        reset_color();
         break;
+        
     default:
+        set_color(4);
         cout << "Opcion invalida. Intente de nuevo." << endl;
-        menu();
+        system("pause");
+        menu(); // Llama al menú nuevamente si la opción es inválida
+    
     }
     } while (opcion != 4);
     
@@ -111,6 +108,7 @@ void mostrarFactura(Carrito carrito[], int numProductos) {
 }
 
 void productos() {
+    
     Categoria categorias[MAX_CATEGORIAS] = {
         {
             "Cepillos dentales",
@@ -147,6 +145,7 @@ void productos() {
 
     do {
         system("cls");
+        productoscout();
         cout << "========== CATEGORIAS DISPONIBLES ============\n";
         for (int i = 0; i < MAX_CATEGORIAS; ++i) {
             cout << i + 1 << ". " << categorias[i].nombre << "\n";
@@ -224,17 +223,20 @@ void cita() {
             paciente[cont].apellidos.c_str(),
             paciente[cont].numero.c_str(),
             paciente[cont].correo.c_str(),
-            paciente[cont].fecha,
+            paciente[cont].fecha,   
             paciente[cont].mesCita,
-            paciente[cont].año,
+            paciente[cont].year,
             paciente[cont].hora,
             paciente[cont].minutos
         );
+
+
 
         cont++;
         cout << "Datos agendados correctamente." << endl;
 
         fclose(ptrF);
+        system("pause");
     }
 }
 
@@ -249,8 +251,8 @@ void fechas() {
 
     // Asignamos la fecha a la estructura del paciente
     paciente[cont].fecha = fecha;
-    paciente[cont].mesCita = mes;
-    paciente[cont].año = year;
+    paciente[cont].mesCita = mesop;
+    paciente[cont].year = year;
 
     int horaCita;
     do {
@@ -278,35 +280,72 @@ void fechas() {
 }
 
 
-
-
 int servicios()
 {
+
+    citacout();
     int servicio;
+    char servicio_op;
+    cout << "========== SERVICIOS ============\n";
     cout << "1. CALZAS DENTALES." << endl;
     cout << "2. ORTODONCIA. " << endl;
     cout << "3. LIMPIEZA. " << endl;
-    cout << "\n¿Deseas agendar alguno de nuestros servicios?\nEscribe 1 para confirmar.\nEscribe 2 para volver al menú principal. \nEscribe otra tecla para salir." << endl;
-    cin >> servicio;
-    // preguntar servicio
+    cout<<"\n¿Desea agendar algún servicio? (s/n)"<<endl;
+    cout << "Escribe: ";
+    cin>>servicio_op;
 
-    if (servicio == 1)
+
+    paciente[cont].servicio = servicio;
+    if (servicio_op == 's' || servicio_op == 'S')
     {
+        cout<<"\n¿Cuál servicio deseas agendar?"<<endl;
+        cin>>servicio;
+
+    switch (servicio)
+    {
+    case 1:
+        horas_dia+=hora_calza;
+        cout<<"\nAgenda la fecha. "<<endl;
         calendario();
+        break;
+    case 2:
+        horas_dia+=hora_ortodoncia;
+        cout<<"\nAgenda la fecha. "<<endl;
+        calendario();
+        break;
+    case 3:
+        horas_dia+=hora_limpieza;
+        cout<<"\nAgenda la fecha. "<<endl;
+        calendario();
+        break;
+
+    default:
+    break;
     }
-    else if (servicio == 2)
+   
+    }
+    if (servicio_op == 'n' || servicio_op == 'N')
     {
-        cout << "Regresando al menú principal..." << endl;
+        int menuOsalir;
+        cout<<"1. Volver al menÃº principal."<<endl;
+        cout<<"2. Salir."<<endl;
+        cin>>menuOsalir;
+
+    switch (menuOsalir)
+    {
+    case 1:
         menu();
-    }
-    else
-    {
-        cout << "Saliendo..." << endl;
+        break;
+        
+    default:
+        break;
     }
 
+    }
+
+    
     return 0;
 }
-
 int getTime()
 {
     // NULL = devuelve tiempo actual
@@ -342,11 +381,12 @@ void calendario()
     {
         cout << "Escribe un mes válido. ";
         calendario();
+        return;
     }
 
     if (mesop >= mes)
     {
-        cout << "\nFechas disponibles en color blanco, las grises ya están reservadas.";
+        cout << "\nFechas disponibles en color azul, las rojas ya están llenas.";
 
         // impresion del mes
         cout << "\n\nMes: ";
@@ -390,44 +430,104 @@ void calendario()
             break;
         }
         cout << "\n";
-        // Días de la semana
+      
+      // Dí­as de la semana
         printf("%-8s %-8s %-8s %-8s %-8s %-8s %-8s\n", "DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB");
 
         int z = zeller();
 
-        // Imprimir espacios en blanco para los días antes del primer día del mes
-        for (int i = 0; i < z; i++) {
+        for (int i = 0; i < z; i++)
+        {
             printf("%-9s", " ");
         }
 
-        int diasMonth = calcDias();
-        for (int dia = 1; dia <= diasMonth; dia++) {
-            if (mesop > mes || (mesop == mes && dia >= dia_mes)) {
-                // Días en color celeste
-                printf("\033[36m%-9d\033[0m", dia);
-            } else {
-                printf("%-9d", dia);
+         // Leer fechas desde el archivo y mostrar en el calendario
+        std::string directorioActual = obtenerDirectorioActual(); // Obtenemos el directorio actual
+        FILE *ptrF;
+        
+        if ((ptrF = fopen((directorioActual + "\\fechas.dat").c_str(), "r")) == NULL)
+        {
+            printf("\nNo se pudo abrir el archivo.\n");
+        }
+        else
+        {
+            int diasMonth = calcDias();
+            int reservedDates[diasMonth] = {0};
+            int fecha, mesArchivo, yearArchivo;
+          
+            while (fscanf(ptrF, "%*s %*s %*s %*s %d/%d/%d %*d:00", &fecha, &mesArchivo, &yearArchivo) != EOF)  //se agrega * para que no lea 
+            {
+                if (mesArchivo == mesop && yearArchivo == year)
+                {
+                    reservedDates[fecha - 1] = 1;
+                }
             }
-            z++;
-            if (z % 7 == 0) {
-                cout << "\n";
+
+            fclose(ptrF);
+
+            // Imprimir las fechas
+            for (int dia = 1; dia <= diasMonth; dia++)
+            {
+                if (reservedDates[dia - 1] == 1)
+                {
+                    set_color(4); // Establece el color del texto a rojo
+                    printf("%-9d", dia);
+                    reset_color();
+                }
+                else
+                {
+                    set_color(1); // Establece el color del texto a azul
+                    printf("%-9d", dia);
+                    reset_color();
+                }
+
+                z++;
+
+                if (z % 7 == 0)
+                {
+                    cout << "\n";
+                }
             }
         }
+
         cout << "\n\n";
     }
-    cout << "\nDeseas agendar una cita en las fechas disponibles? (s/n)\n";
+    reset_color();
+    cout << "¿Deseas agendar una cita en las fechas disponibles? (s/n)\n";
     cout << "Escribe: ";
     cin >> opcion;
+
+
+    int opcion2;
     if (opcion == 's' || opcion == 'S')
     {
         cita();
     }
-    else
+    else if (opcion == 'n' || opcion == 'N')
     {
+        cout<<"1. Agendar la cita en otro mes"<<endl;
+        cout<<"2. Salir."<<endl;
+        cout<<"Escribe: ";
+        cin>>opcion2;
+
+        if(opcion2 ==1){
+            calendario();
+        }
+        
+        else if(opcion2== 2) {
         cout << "Saliendo...\n\n";
         system("pause");
+        }
+
+        else{
+            cout<<"Opción inválida. Intenta de nuevo.";
+            calendario();
+        }
+
+
     }
 }
+
 
 int calcDias()
 {
