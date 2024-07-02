@@ -8,7 +8,7 @@ int servicios();
 void productos();
 
 struct Paciente{
-    string nombres; //std sol,uciona error del getline en agendar citas por alguna razon??? NO QUITAR()
+    string nombres; 
     string apellidos;
     string numero;
     string correo;
@@ -24,8 +24,6 @@ struct Paciente{
 //structs de productos kkke
 const int MAX_PROD = 5;
 const int MAX_CATEGORIAS = 3;
-
-
 
 struct Producto
 {
