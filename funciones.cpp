@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <iomanip>
 #include <stdio.h>
@@ -10,6 +11,22 @@
 #include "colores.cpp"
 
 using namespace std;
+
+
+//Añadir prototipos de funciones y procedimientos
+void menu();
+void mostrarProductos(Categoria categoria);
+void mostrarFactura(Carrito carrito[], int numProductos);
+void guardarfactura(Carrito carrito[], int numProductos, const string& nombreArchivo);
+void productos();
+void cita();
+void fechas();
+int servicios();
+int getTime();
+void calendario();
+int calcDias();
+bool esBisiesto();
+int zeller();
 
 void menu()
 {
@@ -76,7 +93,45 @@ void mostrarProductos(Categoria categoria) {
     cout << "0. Regresar\n";
 }
 
+void guardarFactura(Carrito carrito[], int numProductos, const string& nombreArchivo) {
+    ofstream archivo(nombreArchivo);
+    if (archivo.is_open()) {
+        const double IVA = 0.15;
+        double totalSinIVA = 0.0;
+        double totalConIVA = 0.0;
+
+        archivo << "---------------------------------------------" << endl;
+        archivo << "                  FACTURA                " << endl;
+        archivo << "---------------------------------------------" << endl;
+        archivo << "               " << dia_mes << " / " << mes << " / " << year << "     " << endl;
+        archivo << "---------------------------------------------" << endl;
+        archivo << left << setw(20) << "Producto" << setw(10) << "Precio" << setw(10) << "Cantidad" << setw(10) << "Total" << endl;
+        archivo << "---------------------------------------------" << endl;
+
+        for (int i = 0; i < numProductos; i++) {
+            double totalProducto = carrito[i].precio * carrito[i].cantidad;
+            totalSinIVA += totalProducto;
+            archivo << left << setw(20) << carrito[i].nombre << setw(10) << carrito[i].precio << setw(10) << carrito[i].cantidad << setw(10) << totalProducto << endl;
+        }
+
+        double ivaCalculado = totalSinIVA * IVA;
+        totalConIVA = totalSinIVA + ivaCalculado;
+
+        archivo << "---------------------------------------------" << endl;
+        archivo << left << setw(20) << "Subtotal" << setw(10) << "" << setw(10) << "" << setw(10) << totalSinIVA << endl;
+        archivo << left << setw(20) << "IVA (15%)" << setw(10) << "" << setw(10) << "" << setw(10) << ivaCalculado << endl;
+        archivo << left << setw(20) << "Total" << setw(10) << "" << setw(10) << "" << setw(10) << totalConIVA << endl;
+        archivo << "---------------------------------------------" << endl;
+        archivo.close();
+        cout << "Factura guardada en " << nombreArchivo << endl;
+    } else {
+        cerr << "No se pudo abrir el archivo para guardar la factura." << endl;
+    }
+}
+
 void mostrarFactura(Carrito carrito[], int numProductos) {
+    system("cls");
+    carritocout();
     getTime();
     const double IVA = 0.15;
     double totalSinIVA = 0.0;
@@ -105,7 +160,17 @@ void mostrarFactura(Carrito carrito[], int numProductos) {
     cout << left << setw(20) << "Total" << setw(10) << "" << setw(10) << "" << setw(10) << totalConIVA << endl;
     cout << "---------------------------------------------" << endl;
     
+    char opcion;
+    cout << "¿Desea guardar la factura en un archivo? (s/n): ";
+    cin >> opcion;
+    if (opcion == 's' || opcion == 'S') {
+        string nombreArchivo;
+        cout << "Ingrese el nombre del archivo: ";
+        cin >> nombreArchivo;
+        guardarFactura(carrito, numProductos, nombreArchivo);
+    }
 }
+
 
 void productos() {
     
