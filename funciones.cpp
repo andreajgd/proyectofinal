@@ -305,7 +305,7 @@ void eliminarCita() {
     bool encontrado = false;
 
     cout << "Ingrese el nombre y apellido con el que agendaste la cita: ";
-    getline(cin, nombrePaciente); // Leer toda la línea de entrada del usuario
+    getline(cin, nombrePaciente); 
 
     string linea;
     while (getline(archivoEntrada, linea)) {
