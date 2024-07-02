@@ -47,8 +47,6 @@ struct Carrito {
 };
 
 
-
-
 int cont = 0; // Contador para el número de pacientes
 
 void calendario();
@@ -57,13 +55,14 @@ bool esBisiesto();
 int zeller();
 int getTime ();
 
+void eliminarCita();
 void fechas();
 void calculoFechas();
 
 int dia_mes,mes,year,mesop,hora,minutos;
 
 #define NUM_ALLOWED 8
-#define NUM_ALLOWED 8
+
 #define hora_calza 1
 #define hora_limpieza 1
 #define hora_ortodoncia 2 

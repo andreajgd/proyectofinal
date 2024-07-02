@@ -8,6 +8,9 @@
 #include "structs.h"
 #include "getPATH.cpp"
 #include "colores.cpp"
+#include <fstream>
+
+
 
 using namespace std;
 
@@ -36,7 +39,8 @@ void menu()
     cout << "Opcion: ";
     reset_color(); // Restaura el color del texto
     cin >> opcion;
-    
+    cin.ignore();
+
     switch (opcion)
     {
     case 1:
@@ -46,7 +50,9 @@ void menu()
 
     case 2:
         system("cls");
-        //ok
+        eliminarCita();
+        break;
+
     case 3:
         system("cls"); // Limpia la pantalla
         productos();
@@ -111,7 +117,7 @@ void productos() {
     
     Categoria categorias[MAX_CATEGORIAS] = {
         {
-            "Cepillos dentales",
+            "CEPILLOS DENTALES",
             {
                 {"Cepillos estándar", 1.5},
                 {"Cepillos eléctricos", 15.0},
@@ -121,7 +127,7 @@ void productos() {
             4 // productos en esta categoria
         },
 
-        {"Higiene bucal",
+        {"HIGIENE BUCAL",
             {
                 {"Enjuague bucal sensitive", 3.0},
                 {"Enjuague bucal terapéutico", 3.5},
@@ -131,7 +137,7 @@ void productos() {
             },
             5},
 
-        {"Articulos para brackets",
+        {"ARTICULOS PARA BRACKETS",
             {
                 {"Cera para brackets", 1.2},
                 {"Ligas surtidas", 0.5},
@@ -151,7 +157,8 @@ void productos() {
             cout << i + 1 << ". " << categorias[i].nombre << "\n";
         }
         cout << "0. Salir\n";
-        cout << "Seleccione una categoria (0 para salir): ";
+        cout << "Seleccione una categoria (0 para salir):\n";
+        cout<<"Opción: ";
         cin >> opcion;
 
         if (opcion > 0 && opcion <= MAX_CATEGORIAS) {
@@ -246,7 +253,12 @@ void fechas() {
     int fecha; // Validador de fecha según el número de días del mes en el calendario
     do {
         printf("Ingresa el día de la cita (1-%d): ", calcDias());
-        cin >> fecha;
+        if(horas_lab == horas_dia){
+            cout<<"Este día esta lleno, intenta con otro."<<endl;
+        }
+        else{
+            cin >> fecha;
+        }
     } while (fecha > calcDias() || fecha < 1);
 
     // Asignamos la fecha a la estructura del paciente
@@ -278,6 +290,65 @@ void fechas() {
     cin.ignore();
     cin.get();
 }
+
+void eliminarCita() {
+
+    ifstream archivoEntrada("fechas.dat");
+    ofstream archivoSalida("fechas_tmp.dat");
+
+    if (!archivoEntrada || !archivoSalida) {
+        cerr << "Error al abrir el archivo." << endl;
+        return;
+    }
+
+    string nombrePaciente;
+    bool encontrado = false;
+
+    cout << "Ingrese el nombre y apellido con el que agendaste la cita: ";
+    getline(cin, nombrePaciente); // Leer toda la línea de entrada del usuario
+
+    string linea;
+    while (getline(archivoEntrada, linea)) {
+        // Buscar el nombre del paciente en cada línea del archivo
+        if (linea.find(nombrePaciente) != string::npos) {
+            // Si se encuentra el nombre, marcar como encontrado y no escribir en archivoSalida
+            encontrado = true;
+        } else {
+            // Si no se encuentra el nombre, escribir la línea en archivoSalida
+            archivoSalida << linea << endl;
+        }
+    }
+
+    archivoEntrada.close();
+    archivoSalida.close();
+
+    if (!encontrado) {
+        cout << "No se encontró al paciente con el nombre proporcionado." << endl;
+    } else {
+        // Eliminar el archivo original y renombrar el temporal
+        if (remove("fechas.dat") != 0) {
+            cerr << "Error al eliminar el archivo original." << endl;
+        } else if (rename("fechas_tmp.dat", "fechas.dat") != 0) {
+            cerr << "Error al renombrar el archivo temporal." << endl;
+        } else {
+            int op;
+            cout << "Cita eliminada correctamente." << endl;
+            cout<<"1. Volver al menú. "<<endl;
+            cout<<"2. Salir. "<<endl;
+            cin>>op;
+            switch (op)
+            {
+            case 1:
+                menu();
+                break;
+            
+            default:
+                break;
+            }
+        }
+    }
+}
+
 
 
 int servicios()
