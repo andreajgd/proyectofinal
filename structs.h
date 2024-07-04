@@ -62,9 +62,4 @@ void calculoFechas();
 int dia_mes,mes,year,mesop,hora,minutos;
 
 #define NUM_ALLOWED 8
-
-#define hora_calza 1
-#define hora_limpieza 1
-#define hora_ortodoncia 2 
-int horas_dia=0;
-#define horas_lab 8
+int cont_dia=0;
