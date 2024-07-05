@@ -319,7 +319,7 @@ void cita() {
 
 
         // Guardamos los datos en el archivo
-            fprintf(ptrF, "%s %s %s %s %d/%d/%d %d:00\n%s\n\n",
+            fprintf(ptrF, "%s %s %s %s %d/%d/%d %d:00 %s\n",
             paciente[cont].nombres.c_str(),
             paciente[cont].apellidos.c_str(),
             paciente[cont].numero.c_str(),
