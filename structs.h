@@ -17,7 +17,7 @@ struct Paciente{
     int hora;
     int minutos;
     int year;
-    int servicio;
+    string servicio;    
     
 } paciente[100]; 
 
@@ -44,8 +44,8 @@ struct Carrito {
     int cantidad;
 };
 
-
 int cont = 0; // Contador para el número de pacientes
+
 
 void calendario();
 int calcDias();

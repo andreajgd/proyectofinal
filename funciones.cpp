@@ -93,7 +93,7 @@ void menu()
 
 void mostrarProductos(Categoria categoria) {
     cout << "========== PRODUCTOS EN " << categoria.nombre << " ==========" << endl;
-    for (int i = 0; i < categoria.num_productos; ++i) {
+    for (int i = 0; i < categoria.num_productos; i++) {
         cout << i + 1 << ". " << categoria.productos[i].nombre << " - $" << categoria.productos[i].precio_prod << endl;
     }
     cout << "0. Regresar\n";
@@ -312,14 +312,14 @@ void cita() {
         }
         else{
             set_color(4);
-            cout << "Correo inválido. Intente de nuevo." << endl;
+            cout << "\nCorreo inválido. Intente de nuevo." << endl;
             reset_color();
         }
         }while (!correovalido(paciente[cont].correo));
 
 
         // Guardamos los datos en el archivo
-            fprintf(ptrF, "%s %s %s %s %d/%d/%d %d:00\n",
+            fprintf(ptrF, "%s %s %s %s %d/%d/%d %d:00\n%s\n\n",
             paciente[cont].nombres.c_str(),
             paciente[cont].apellidos.c_str(),
             paciente[cont].numero.c_str(),
@@ -328,7 +328,7 @@ void cita() {
             paciente[cont].mesCita,
             paciente[cont].year,
             paciente[cont].hora,
-            paciente[cont].minutos
+            paciente[cont].servicio.c_str()
         );
 
         cont++;
@@ -344,12 +344,23 @@ void cita() {
 void fechas() {
     int date; // Validador de fecha según el número de días del mes en el calendario
     do {
-
         printf("Ingresa el día de la cita (1-%d): ", calcDias());
         cin >> date;
-        
-    } while (date > calcDias() || date < 1);
 
+        cont_dia = 0;
+        for (int i = 0; i < cont; i++) {
+            if (paciente[i].fecha == date && paciente[i].mesCita == mesop) {
+                cont_dia++;
+            }
+        }
+
+        if (cont_dia == 3) {
+            set_color(4);
+            cout << "\nEste día está lleno. Intenta con otro." << endl;
+            reset_color();
+        }
+
+    } while (date > calcDias() || date < 1 || cont_dia == 3);
 
     // Asignamos la fecha a la estructura del paciente
     paciente[cont].fecha = date;
@@ -363,7 +374,7 @@ void fechas() {
     } while ((horaCita < 8 || horaCita > 17) || horaCita == 12);
 
     // Validación para no permitir citas duplicadas
-    for (int i = 0; i < cont; ++i) {
+    for (int i = 0; i < cont; i++) {
         if (paciente[i].fecha == date && paciente[i].hora == horaCita) {
             cout << "Ya existe una cita programada para esa fecha y hora. Por favor, elige otra." << endl;
             fechas(); // Vuelve a solicitar los datos de la cita
@@ -383,8 +394,8 @@ void fechas() {
 
 void eliminarCita() {
 
-    ifstream archivoEntrada("fechas.dat");
-    ofstream archivoSalida("fechas_tmp.dat");
+    ifstream archivoEntrada("fechas.dat");  //abre el archivo modo lectura
+    ofstream archivoSalida("fechas_tmp.dat"); //abre el archivo modo escritura
 
     if (!archivoEntrada || !archivoSalida) {
         cout << "Error al abrir el archivo." << endl;
@@ -398,14 +409,15 @@ void eliminarCita() {
     getline(cin, nombrePaciente); 
 
     string linea;
+    //se guarda el texto del archivo en la variale "linea"
     while (getline(archivoEntrada, linea)) {
-        // Buscar el nombre del paciente en cada línea del archivo
+       
         if (linea.find(nombrePaciente) != string::npos) {
-            // Si se encuentra el nombre, marcar como encontrado y no escribir en archivoSalida
+            //npos se utiliza para verificar que se encuentre la cadena buscada
             encontrado = true;
         } else {
         
-            // Si no se encuentra el nombre, escribir la línea en archivoSalida
+            // si no se encuentra el nombre, escribir la línea en archivoSalida
             archivoSalida << linea << endl;
         }
     }
@@ -416,7 +428,7 @@ void eliminarCita() {
     if (!encontrado) {
         cout << "No se encontró al paciente con el nombre proporcionado." << endl;
     } else {
-        // Eliminar el archivo original y renombrar el temporal
+        // eliminar el archivo original y renombrar el temporal
         if (remove("fechas.dat") != 0) {
             cout << "Error al eliminar el archivo original." << endl;
         } else if (rename("fechas_tmp.dat", "fechas.dat") != 0) {
@@ -448,7 +460,7 @@ int servicios()
 {
 
     citacout();
-    int servicio;
+   
     char servicio_op;
     cout << "========== SERVICIOS ============\n";
     cout << "1. CALZAS DENTALES." << endl;
@@ -457,34 +469,16 @@ int servicios()
     cout<<"\n¿Desea agendar algún servicio? (s/n)"<<endl;
     cout << "Escribe: ";
     cin>>servicio_op;
-
-
-    paciente[cont].servicio = servicio;
+    
     if (servicio_op == 's' || servicio_op == 'S')
     {
         cout<<"\n¿Cuál servicio deseas agendar?"<<endl;
-        cin>>servicio;
+        cin>>paciente[cont].servicio;
 
-    switch (servicio)
-    {
-    case 1:
-        cout<<"\nAgenda la fecha. "<<endl;
-        calendario();
-        break;
-    case 2:
-        cout<<"\nAgenda la fecha. "<<endl;
-        calendario();
-        break;
-    case 3:
-        cout<<"\nAgenda la fecha. "<<endl;
-        calendario();
-        break;
+    cout<<"Agenda la fecha."<<endl;
+    calendario();
+    }
 
-    default:
-    break;
-    }
-   
-    }
     if (servicio_op == 'n' || servicio_op == 'N')
     {
         int menuOsalir;
@@ -618,11 +612,11 @@ void calendario()
             int reservedDates[31] = {0};
             int fecha, mesArchivo, yearArchivo;
           
-            while (fscanf(ptrF, "%*s %*s %*s %*s %d/%d/%d %*d:00", &fecha, &mesArchivo, &yearArchivo) != EOF)  //se agrega * para que no lea lo demás 
+            while (fscanf(ptrF, "%*s %*s %*s %*s %d/%d/%d %*d:00 %*s" , &fecha, &mesArchivo, &yearArchivo) != EOF)  //se agrega * para que no lea lo demás 
             {
                 if (mesArchivo == mesop && yearArchivo == year)
                 {
-                    reservedDates[fecha - 1]++;
+                    reservedDates[fecha - 1]++;  
                 }
             }
 
